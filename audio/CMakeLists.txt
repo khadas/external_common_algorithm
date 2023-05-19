@@ -16,3 +16,7 @@ endif()
 if(RKAPPLUS_AED_ENABLE OR RKAPPLUS_ENABLE)
 	add_subdirectory(rkaudio_algorithms)
 endif()
+
+if(ROCKAA_ENABLE)
+	add_subdirectory(rockaa)
+endif()
