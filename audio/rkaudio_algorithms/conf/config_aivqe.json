@@ -9,7 +9,7 @@
       "filter_len": 2
     },
     "delay": {
-      "status" : "enable",
+      "status" : "disable",
       "MaxFrame" : 32,
       "LeastDelay" : 0,
       "JumpFrame" : 12,
@@ -36,8 +36,8 @@
       "beta_down_low": "float:0.001",
       "low_freq": 500,
       "high_freq": 3750,
-      "thd_flag": 1,
-      "hard_flag": 1,
+      "thd_flag": 0,
+      "hard_flag": 0,
       "LimitRatio_0": "4.0  4.0  4.0",
       "LimitRatio_1": "1.5  1.5  1.0",
       "ThdSplitFreq_0": "500  3000",
@@ -84,7 +84,7 @@
       "psiMin": "float:0.05",
       "psiMax": "float:0.516",
       "fGmin": "float:0.05",
-      "Sup_Freq1": 2500,
+      "Sup_Freq1": -3588,
       "Sup_Freq2": -3588,
       "Sup_Energy1" : "float:100000.0",
       "Sup_Energy2" : "float:100000.0",
@@ -104,7 +104,7 @@
       "PrioriRatioLow" : "float:0.95",
       "SplitBand" : 20,
       "PrioriSmooth": "float:0.7",
-      "TranMode": 1
+      "TranMode": 0
     },
     "nlp": {
       "status" : "disable",
@@ -117,7 +117,7 @@
       "curveLg": 20,
       "delay"  : 2,
       "forgetting"  : "float:0.98",
-      "t60": "float:0.5",
+      "t60": "float:0.3",
       "coCoeff" : "float:1"
     },
     "cng": {
@@ -134,10 +134,10 @@
     },
     "howl": {
       "status" : "enable",
-      "mode" : 1
+      "mode" : 5
     },
     "doa": {
-      "status" : "enable",
+      "status" : "disable",
       "rad" : "float:0.0585",
       "start_freq" : 800,
       "end_freq" : 1600,
