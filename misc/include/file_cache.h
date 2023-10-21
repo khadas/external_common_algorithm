@@ -7,7 +7,7 @@
 
 typedef struct _FILE_CACHE_ARG {
 	int write_cache;
-	int tatal_cache;
+	int total_cache;
 } FILE_CACHE_ARG;
 
 int file_cache_init(FILE_CACHE_ARG *cache_arg);
