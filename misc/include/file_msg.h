@@ -10,6 +10,7 @@ typedef enum _FILE_NOTIFY{
 	OPEN_FAILED,
 	WRITE_FAILED,
 	WRITE_SLOW,
+	CARD_NONEXIST,
 } FILE_NOTIFY;
 
 typedef void (*FILE_EVENT_CALLBACK)(int cmd, void *msg0, void *msg1);

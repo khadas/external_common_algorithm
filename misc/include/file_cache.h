@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 typedef struct _FILE_CACHE_ARG {
+	const char *sdcard_path;
 	int write_cache;
 	int total_cache;
 } FILE_CACHE_ARG;
