@@ -22,7 +22,8 @@
 
 #include "rockaa_common.h"
 
-enum {
+enum
+{
     STATUS_RES_SUCCESS = 0,
     STATUS_RES_NONE = -1,
     STATUS_RES_INVALID = -2,

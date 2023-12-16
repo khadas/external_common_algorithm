@@ -26,7 +26,8 @@ int main(int argc, char **argv)
     int read_len, period_count = 4;
 
     handle = (rockaa_p *)malloc(sizeof(rockaa_p));
-    if (!handle) {
+    if (!handle)
+    {
         LOGE("alloc talk handle failed\n");
         return -1;
     }
@@ -43,36 +44,42 @@ int main(int argc, char **argv)
                         period_count * \
                         handle->channels;
     handle->out_buf = (char *)malloc(handle->out_bytes);
-    if (!handle->out_buf) {
+    if (!handle->out_buf)
+    {
         LOGE("out_buf alloc failed\n");
         return -1;
     }
 
     handle->in_fp = fopen("sample_play_in.pcm", "rb");
-    if (!handle->in_fp) {
+    if (!handle->in_fp)
+    {
         LOGE("in_fp fopen 'sample_play_in.pcm' failed\n");
         return -1;
     }
 
     handle->out_fp = fopen("sample_play_out.pcm", "wb");
-    if (!handle->out_fp) {
+    if (!handle->out_fp)
+    {
         LOGE("out_fp 'sample_play_out' fopen failed\n");
         return -1;
     }
 
     pcm_in = (short *)malloc(handle->nb_samples * sizeof(short) * handle->channels);
-    if (!pcm_in) {
+    if (!pcm_in)
+    {
         LOGE("alloc pcm_in failed\n");
         return -1;
     }
     pcm_out = (short *)malloc(handle->nb_samples * sizeof(short) * handle->channels);
-    if (!pcm_out) {
+    if (!pcm_out)
+    {
         LOGE("alloc pcm_out failed\n");
         return -1;
     }
 
     rockaa_play_effect_create(handle);
-    while (!feof(handle->in_fp)) {
+    while (!feof(handle->in_fp))
+    {
         read_len = fread(pcm_in, 1,
                          handle->nb_samples * sizeof(short) * handle->channels,
                          handle->in_fp);
@@ -87,19 +94,23 @@ int main(int argc, char **argv)
         free(pcm_out);
     if (pcm_in)
         free(pcm_in);
-    if (handle->out_buf) {
+    if (handle->out_buf)
+    {
         free(handle->out_buf);
         handle->out_buf = NULL;
     }
-    if (handle->in_fp) {
+    if (handle->in_fp)
+    {
         fclose(handle->in_fp);
         handle->in_fp = NULL;
     }
-    if (handle->out_fp) {
+    if (handle->out_fp)
+    {
         fclose(handle->out_fp);
         handle->out_fp = NULL;
     }
-    if (handle) {
+    if (handle)
+    {
         free(handle);
         handle = NULL;
     }

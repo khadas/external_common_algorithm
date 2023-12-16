@@ -27,13 +27,18 @@
 #include <stdint.h>
 #include <string.h>
 
+#define rt_memset memset
 #define rt_malloc(x) calloc(1, x)
-#define rt_safe_free free
-#define RT_NULL NULL
+#define rt_safe_free(x) do { if (x) free(x); } while (0)
+#define RT_NULL     NULL
+#define RT_NONE     "none"
+#define RT_BOOL     char
+#define RT_TRUE     1
+#define RT_FALSE    0
 
 #define RT_ARRAY_ELEMS(a)      (sizeof(a) / sizeof((a)[0]))
 
-#define ROCKAA_VERSION     "V1.0.0"
+#define ROCKAA_VERSION     "V1.1.0"
 #define DEFAULT_FRAME_GAP  16
 
 typedef int8_t       INT8;
@@ -57,6 +62,23 @@ typedef enum _ROCKAA_DEBUG
     DEBUG_SUMMARY    = 1 << 0,
     DEBUG_PER_FRAME  = 1 << 1,
 } ROCKAA_DEBUG;
+
+struct wav_header
+{
+    uint32_t riff_id;
+    uint32_t riff_sz;
+    uint32_t riff_fmt;
+    uint32_t fmt_id;
+    uint32_t fmt_sz;
+    uint16_t audio_format;
+    uint16_t num_channels;
+    uint32_t sample_rate;
+    uint32_t byte_rate;
+    uint16_t block_align;
+    uint16_t bits_per_sample;
+    uint32_t data_id;
+    uint32_t data_sz;
+};
 
 #define LOGV(format, ...)                                     \
   do {                                                        \
@@ -88,7 +110,9 @@ typedef enum _ROCKAA_DEBUG
 inline static void rockaa_version(char *tag)
 {
     printf("Test for Rock Audio Algorithm %s Version: %s\n",
-        tag, ROCKAA_VERSION);
+           tag, ROCKAA_VERSION);
 }
+
+int rockaa_common_handle_wav(FILE *in_fp, char *in_file);
 
 #endif /* __ROCKAA_COMMON_H__ */

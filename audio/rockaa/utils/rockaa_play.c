@@ -63,7 +63,8 @@
 
 #define OUTNAME_PREFIX          "EFFECTPLAY_"
 
-struct cmd {
+struct cmd
+{
     const char *filename;
     const char *filetype;
     unsigned int card;
@@ -102,18 +103,21 @@ static void cmd_init(struct cmd *cmd)
 #define WAVE_FORMAT_PCM 0x0001
 #define WAVE_FORMAT_IEEE_FLOAT 0x0003
 
-struct riff_wave_header {
+struct riff_wave_header
+{
     uint32_t riff_id;
     uint32_t riff_sz;
     uint32_t wave_id;
 };
 
-struct chunk_header {
+struct chunk_header
+{
     uint32_t id;
     uint32_t sz;
 };
 
-struct chunk_fmt {
+struct chunk_fmt
+{
     uint16_t audio_format;
     uint16_t num_channels;
     uint32_t sample_rate;
@@ -122,7 +126,8 @@ struct chunk_fmt {
     uint16_t bits_per_sample;
 };
 
-struct ctx {
+struct ctx
+{
     struct pcm *pcm;
 
     struct riff_wave_header wave_header;
@@ -141,7 +146,8 @@ static bool is_wave_file(const char *filetype)
 
 static bool signed_pcm_bits_to_format(int bits)
 {
-    switch (bits) {
+    switch (bits)
+    {
     case 8:
         return PCM_FORMAT_S8;
     case 16:
@@ -157,30 +163,37 @@ static bool signed_pcm_bits_to_format(int bits)
 
 static int parse_wave_file(struct ctx *ctx, const char *filename)
 {
-    if (fread(&ctx->wave_header, sizeof(ctx->wave_header), 1, ctx->file) != 1){
+    if (fread(&ctx->wave_header, sizeof(ctx->wave_header), 1, ctx->file) != 1)
+    {
         fprintf(stderr, "error: '%s' does not contain a riff/wave header\n", filename);
         return -1;
     }
 
-    if (ctx->wave_header.riff_id != ID_RIFF || ctx->wave_header.wave_id != ID_WAVE) {
+    if (ctx->wave_header.riff_id != ID_RIFF || ctx->wave_header.wave_id != ID_WAVE)
+    {
         fprintf(stderr, "error: '%s' is not a riff/wave file\n", filename);
         return -1;
     }
 
     bool more_chunks = true;
-    do {
-        if (fread(&ctx->chunk_header, sizeof(ctx->chunk_header), 1, ctx->file) != 1) {
+    do
+    {
+        if (fread(&ctx->chunk_header, sizeof(ctx->chunk_header), 1, ctx->file) != 1)
+        {
             fprintf(stderr, "error: '%s' does not contain a data chunk\n", filename);
             return -1;
         }
-        switch (ctx->chunk_header.id) {
+        switch (ctx->chunk_header.id)
+        {
         case ID_FMT:
-            if (fread(&ctx->chunk_fmt, sizeof(ctx->chunk_fmt), 1, ctx->file) != 1) {
+            if (fread(&ctx->chunk_fmt, sizeof(ctx->chunk_fmt), 1, ctx->file) != 1)
+            {
                 fprintf(stderr, "error: '%s' has incomplete format chunk\n", filename);
                 return -1;
             }
             /* If the format header is larger, skip the rest */
-            if (ctx->chunk_header.sz > sizeof(ctx->chunk_fmt)) {
+            if (ctx->chunk_header.sz > sizeof(ctx->chunk_fmt))
+            {
                 fseek(ctx->file, ctx->chunk_header.sz - sizeof(ctx->chunk_fmt), SEEK_CUR);
             }
             break;
@@ -192,37 +205,45 @@ static int parse_wave_file(struct ctx *ctx, const char *filename)
             /* Unknown chunk, skip bytes */
             fseek(ctx->file, ctx->chunk_header.sz, SEEK_CUR);
         }
-    } while (more_chunks);
+    }
+    while (more_chunks);
 
     return 0;
 }
 
-static int ctx_init(struct ctx* ctx, struct cmd *cmd)
+static int ctx_init(struct ctx *ctx, struct cmd *cmd)
 {
     unsigned int bits = cmd->bits;
     struct pcm_config *config = &cmd->config;
     bool is_float = cmd->is_float;
 
-    if (cmd->filename == NULL) {
+    if (cmd->filename == NULL)
+    {
         fprintf(stderr, "filename not specified\n");
         return -1;
     }
-    if (strcmp(cmd->filename, "-") == 0) {
+    if (strcmp(cmd->filename, "-") == 0)
+    {
         ctx->file = stdin;
-    } else {
+    }
+    else
+    {
         ctx->file = fopen(cmd->filename, "rb");
         fseek(ctx->file, 0L, SEEK_END);
         ctx->file_size = ftell(ctx->file);
         fseek(ctx->file, 0L, SEEK_SET);
     }
 
-    if (ctx->file == NULL) {
+    if (ctx->file == NULL)
+    {
         fprintf(stderr, "failed to open '%s'\n", cmd->filename);
         return -1;
     }
 
-    if (is_wave_file(cmd->filetype)) {
-        if (parse_wave_file(ctx, cmd->filename) != 0) {
+    if (is_wave_file(cmd->filetype))
+    {
+        if (parse_wave_file(ctx, cmd->filename) != 0)
+        {
             fclose(ctx->file);
             return -1;
         }
@@ -233,23 +254,29 @@ static int ctx_init(struct ctx* ctx, struct cmd *cmd)
         ctx->file_size = (size_t) ctx->chunk_header.sz;
     }
 
-    if (is_float) {
+    if (is_float)
+    {
         config->format = PCM_FORMAT_FLOAT_LE;
-    } else {
+    }
+    else
+    {
         config->format = signed_pcm_bits_to_format(bits);
-        if (config->format == -1) {
+        if (config->format == -1)
+        {
             fprintf(stderr, "bit count '%u' not supported\n", bits);
             fclose(ctx->file);
             return -1;
         }
     }
 
-    if (!ctx->use_offline) {
+    if (!ctx->use_offline)
+    {
         ctx->pcm = pcm_open(cmd->card,
                             cmd->device,
                             cmd->flags,
                             config);
-        if (!pcm_is_ready(ctx->pcm)) {
+        if (!pcm_is_ready(ctx->pcm))
+        {
             fprintf(stderr, "failed to open for pcm %u,%u. %s\n",
                     cmd->card, cmd->device,
                     pcm_get_error(ctx->pcm));
@@ -257,7 +284,9 @@ static int ctx_init(struct ctx* ctx, struct cmd *cmd)
             pcm_close(ctx->pcm);
             return -1;
         }
-    } else {
+    }
+    else
+    {
         ctx->pcm = NULL;
     }
 
@@ -266,13 +295,16 @@ static int ctx_init(struct ctx* ctx, struct cmd *cmd)
 
 static void ctx_free(struct ctx *ctx)
 {
-    if (ctx == NULL) {
+    if (ctx == NULL)
+    {
         return;
     }
-    if (ctx->pcm != NULL) {
+    if (ctx->pcm != NULL)
+    {
         pcm_close(ctx->pcm);
     }
-    if (ctx->file != NULL) {
+    if (ctx->file != NULL)
+    {
         fclose(ctx->file);
     }
 }
@@ -319,9 +351,11 @@ static int offline_file_process(rockaa_p *handle, char *in_name)
 
     LOGI("rockaa playback process via [offline] file start, in_file: %s\n", in_name);
 
-    if (handle->out_fp == NULL) {
+    if (handle->out_fp == NULL)
+    {
         out_name = (char *)malloc(strlen(OUTNAME_PREFIX) + strlen(in_name) + 32);
-        if (out_name == NULL) {
+        if (out_name == NULL)
+        {
             LOGE("alloc out_name failed\n");
             return -1;
         }
@@ -338,29 +372,34 @@ static int offline_file_process(rockaa_p *handle, char *in_name)
             sprintf(out_name, "%s/%s%dch_%db_%d_%s", dname, OUTNAME_PREFIX,
                     handle->channels, handle->bits, handle->rate, bname);
 
-        if (dirc) {
+        if (dirc)
+        {
             free(dirc);
             dirc = NULL;
         }
-        if (basec) {
+        if (basec)
+        {
             free(basec);
             basec = NULL;
         }
 
         handle->out_fp = fopen(out_name, "wb");
-        if (handle->out_fp == NULL) {
+        if (handle->out_fp == NULL)
+        {
             LOGE("%s out_fp fopen failed\n", out_name);
             return -1;
         }
 
-        if (out_name) {
+        if (out_name)
+        {
             free(out_name);
             out_name = NULL;
         }
     }
 
     handle->in_fp = fopen(in_name, "rb");
-    if (handle->in_fp == NULL) {
+    if (handle->in_fp == NULL)
+    {
         LOGE("%s in_fp fopen failed\n", in_name);
         return -1;
     }
@@ -379,7 +418,8 @@ static int offline_file_process(rockaa_p *handle, char *in_name)
     }
 
     rockaa_play_effect_create(handle);
-    while (!feof(handle->in_fp)) {
+    while (!feof(handle->in_fp))
+    {
         read_len = fread(pcm_in, 1,
                          handle->nb_samples * sizeof(short) * handle->channels,
                          handle->in_fp);
@@ -395,11 +435,13 @@ static int offline_file_process(rockaa_p *handle, char *in_name)
     if (pcm_in)
         free(pcm_in);
 
-    if (handle->in_fp) {
+    if (handle->in_fp)
+    {
         fclose(handle->in_fp);
         handle->in_fp = NULL;
     }
-    if (handle->out_fp) {
+    if (handle->out_fp)
+    {
         fclose(handle->out_fp);
         handle->out_fp = NULL;
     }
@@ -414,7 +456,8 @@ int main(int argc, char **argv)
     struct cmd cmd;
     struct ctx ctx;
     struct optparse opts;
-    struct optparse_long long_options[] = {
+    struct optparse_long long_options[] =
+    {
         { "card",         'D', OPTPARSE_REQUIRED },
         { "device",       'd', OPTPARSE_REQUIRED },
         { "period-size",  'p', OPTPARSE_REQUIRED },
@@ -436,47 +479,56 @@ int main(int argc, char **argv)
     rockaa_p *handle = NULL;
     char *in_file = NULL, *out_file = NULL, *conf_name = NULL;
 
-    if (argc < 2) {
+    if (argc < 2)
+    {
         print_usage(argv[0]);
         return EXIT_FAILURE;
     }
 
     cmd_init(&cmd);
     optparse_init(&opts, argv);
-    while ((c = optparse_long(&opts, long_options, NULL)) != -1) {
-        switch (c) {
+    while ((c = optparse_long(&opts, long_options, NULL)) != -1)
+    {
+        switch (c)
+        {
         case 'D':
-            if (sscanf(opts.optarg, "%u", &cmd.card) != 1) {
+            if (sscanf(opts.optarg, "%u", &cmd.card) != 1)
+            {
                 fprintf(stderr, "failed parsing card number '%s'\n", argv[1]);
                 return EXIT_FAILURE;
             }
             break;
         case 'd':
-            if (sscanf(opts.optarg, "%u", &cmd.device) != 1) {
+            if (sscanf(opts.optarg, "%u", &cmd.device) != 1)
+            {
                 fprintf(stderr, "failed parsing device number '%s'\n", argv[1]);
                 return EXIT_FAILURE;
             }
             break;
         case 'p':
-            if (sscanf(opts.optarg, "%u", &cmd.config.period_size) != 1) {
+            if (sscanf(opts.optarg, "%u", &cmd.config.period_size) != 1)
+            {
                 fprintf(stderr, "failed parsing period size '%s'\n", argv[1]);
                 return EXIT_FAILURE;
             }
             break;
         case 'n':
-            if (sscanf(opts.optarg, "%u", &cmd.config.period_count) != 1) {
+            if (sscanf(opts.optarg, "%u", &cmd.config.period_count) != 1)
+            {
                 fprintf(stderr, "failed parsing period count '%s'\n", argv[1]);
                 return EXIT_FAILURE;
             }
             break;
         case 'c':
-            if (sscanf(opts.optarg, "%u", &cmd.config.channels) != 1) {
+            if (sscanf(opts.optarg, "%u", &cmd.config.channels) != 1)
+            {
                 fprintf(stderr, "failed parsing channel count '%s'\n", argv[1]);
                 return EXIT_FAILURE;
             }
             break;
         case 'r':
-            if (sscanf(opts.optarg, "%u", &cmd.config.rate) != 1) {
+            if (sscanf(opts.optarg, "%u", &cmd.config.rate) != 1)
+            {
                 fprintf(stderr, "failed parsing rate '%s'\n", argv[1]);
                 return EXIT_FAILURE;
             }
@@ -485,7 +537,8 @@ int main(int argc, char **argv)
             cmd.filetype = opts.optarg;
             break;
         case 'b':
-            if (sscanf(opts.optarg, "%u", &cmd.bits) != 1) {
+            if (sscanf(opts.optarg, "%u", &cmd.bits) != 1)
+            {
                 fprintf(stderr, "failed parsing bits per one sample '%s'\n", argv[1]);
                 return EXIT_FAILURE;
             }
@@ -518,17 +571,20 @@ int main(int argc, char **argv)
     }
 
 
-    if (in_file) {
+    if (in_file)
+    {
         cmd.filename = in_file;
         ctx.use_offline = true;
     }
-    else {
+    else
+    {
         cmd.filename = optparse_arg(&opts);
         ctx.use_offline = false;
     }
 
     if (cmd.filename != NULL && cmd.filetype == NULL &&
-        (cmd.filetype = strrchr(cmd.filename, '.')) != NULL) {
+            (cmd.filetype = strrchr(cmd.filename, '.')) != NULL)
+    {
         cmd.filetype++;
     }
 
@@ -536,11 +592,13 @@ int main(int argc, char **argv)
     cmd.config.stop_threshold = cmd.config.period_size * cmd.config.period_count;
     cmd.config.start_threshold = cmd.config.period_size;
 
-    if (ctx_init(&ctx, &cmd) < 0) {
+    if (ctx_init(&ctx, &cmd) < 0)
+    {
         return EXIT_FAILURE;
     }
 
-    if (conf_name) {
+    if (conf_name)
+    {
         FILE *out_fp = NULL;
         handle = (rockaa_p *)malloc(sizeof(rockaa_p));
         if (!handle)
@@ -561,9 +619,11 @@ int main(int argc, char **argv)
                             cmd.config.period_count * \
                             cmd.config.channels;
         handle->out_buf = (char *)malloc(handle->out_bytes);
-        if (out_file) {
+        if (out_file)
+        {
             handle->out_fp = fopen(out_file, "wb");
-            if (handle->out_fp == NULL) {
+            if (handle->out_fp == NULL)
+            {
                 LOGE("%s out_fp fopen failed\n", out_file);
                 return -1;
             }
@@ -573,18 +633,22 @@ int main(int argc, char **argv)
         }
 
         LOGI("rate=%d, channels=%d nb_samples=%d debug_mode=%d conf_path:%s\n",
-                 handle->rate,
-                 handle->channels,
-                 handle->nb_samples,
-                 handle->debug_mode,
-                 handle->conf_path);
+             handle->rate,
+             handle->channels,
+             handle->nb_samples,
+             handle->debug_mode,
+             handle->conf_path);
 
-        if (in_file) {
+        if (in_file)
+        {
             offline_file_process(handle, in_file);
             goto finish_effect;
         }
-    } else {
-        if (in_file) {
+    }
+    else
+    {
+        if (in_file)
+        {
             LOGE("Can't support in_file: %s without conf file\n", in_file);
             goto finish_effect;
         }
@@ -595,14 +659,18 @@ int main(int argc, char **argv)
     LOGI("in_file: %s, conf_path: %s\n", in_file, conf_name);
 
     printf("playing '%s': %u ch, %u hz, %u-bit ", cmd.filename, cmd.config.channels,
-            cmd.config.rate, pcm_format_to_bits(cmd.config.format));
-    if (cmd.config.format == PCM_FORMAT_FLOAT_LE) {
+           cmd.config.rate, pcm_format_to_bits(cmd.config.format));
+    if (cmd.config.format == PCM_FORMAT_FLOAT_LE)
+    {
         printf("floating-point PCM\n");
-    } else {
+    }
+    else
+    {
         printf("signed PCM\n");
     }
 
-    if (play_sample(&ctx, handle) < 0) {
+    if (play_sample(&ctx, handle) < 0)
+    {
         ctx_free(&ctx);
         return EXIT_FAILURE;
     }
@@ -620,21 +688,23 @@ finish_effect:
 }
 
 static int check_param(struct pcm_params *params, unsigned int param, unsigned int value,
-                 char *param_name, char *param_unit)
+                       char *param_name, char *param_unit)
 {
     unsigned int min;
     unsigned int max;
     bool is_within_bounds = true;
 
     min = pcm_params_get_min(params, param);
-    if (value < min) {
+    if (value < min)
+    {
         fprintf(stderr, "%s is %u%s, device only supports >= %u%s\n", param_name, value,
                 param_unit, min, param_unit);
         is_within_bounds = false;
     }
 
     max = pcm_params_get_max(params, param);
-    if (value > max) {
+    if (value > max)
+    {
         fprintf(stderr, "%s is %u%s, device only supports <= %u%s\n", param_name, value,
                 param_unit, max, param_unit);
         is_within_bounds = false;
@@ -649,19 +719,20 @@ static int sample_is_playable(const struct cmd *cmd)
     int can_play;
 
     params = pcm_params_get(cmd->card, cmd->device, PCM_OUT);
-    if (params == NULL) {
+    if (params == NULL)
+    {
         fprintf(stderr, "unable to open PCM %u,%u\n", cmd->card, cmd->device);
         return 0;
     }
 
     can_play = check_param(params, PCM_PARAM_RATE, cmd->config.rate, "sample rate", "hz");
     can_play &= check_param(params, PCM_PARAM_CHANNELS, cmd->config.channels, "sample",
-            " channels");
+                            " channels");
     can_play &= check_param(params, PCM_PARAM_SAMPLE_BITS, cmd->bits, "bits", " bits");
     can_play &= check_param(params, PCM_PARAM_PERIOD_SIZE, cmd->config.period_size, "period size",
-            " frames");
+                            " frames");
     can_play &= check_param(params, PCM_PARAM_PERIODS, cmd->config.period_count, "period count",
-            "");
+                            "");
 
     pcm_params_free(params);
 
@@ -679,14 +750,16 @@ static int play_sample(struct ctx *ctx, rockaa_p *handle)
     size_t read_size = 0;
     const struct pcm_config *config = pcm_get_config(ctx->pcm);
 
-    if (config == NULL) {
+    if (config == NULL)
+    {
         fprintf(stderr, "unable to get pcm config\n");
         return -1;
     }
 
     buffer_size = pcm_frames_to_bytes(ctx->pcm, config->period_size);
     buffer = malloc(buffer_size);
-    if (!buffer) {
+    if (!buffer)
+    {
         fprintf(stderr, "unable to allocate %zu bytes\n", buffer_size);
         return -1;
     }
@@ -696,49 +769,63 @@ static int play_sample(struct ctx *ctx, rockaa_p *handle)
 
     if (handle)
         rockaa_play_effect_create(handle);
-    do {
+    do
+    {
         read_size = remaining_data_size > buffer_size ? buffer_size : remaining_data_size;
         num_read = fread(buffer, 1, read_size, ctx->file);
-        if (num_read > 0) {
+        if (num_read > 0)
+        {
             int written_frames;
 
-            if (handle) {
+            if (handle)
+            {
                 rockaa_play_effect_process(handle, buffer, handle->out_buf);
                 written_frames = pcm_writei(ctx->pcm, handle->out_buf,
-                        pcm_bytes_to_frames(ctx->pcm, num_read));
-            } else {
+                                            pcm_bytes_to_frames(ctx->pcm, num_read));
+            }
+            else
+            {
                 written_frames = pcm_writei(ctx->pcm, buffer,
-                    pcm_bytes_to_frames(ctx->pcm, num_read));
+                                            pcm_bytes_to_frames(ctx->pcm, num_read));
             }
 
-            if (written_frames < 0) {
+            if (written_frames < 0)
+            {
                 fprintf(stderr, "error playing sample. %s\n", pcm_get_error(ctx->pcm));
                 break;
             }
 
-            if (!is_stdin_source) {
+            if (!is_stdin_source)
+            {
                 remaining_data_size -= num_read;
             }
             played_data_size += pcm_frames_to_bytes(ctx->pcm, written_frames);
         }
-    } while (!close && num_read > 0 && remaining_data_size > 0);
+    }
+    while (!close && num_read > 0 && remaining_data_size > 0);
     if (handle)
         rockaa_play_effect_destroy(handle);
 
     printf("Played %zu bytes. ", played_data_size);
-    if (is_stdin_source) {
+    if (is_stdin_source)
+    {
         printf("\n");
-    } else {
+    }
+    else
+    {
         printf("Remains %zu bytes.\n", remaining_data_size);
     }
 
     pcm_wait(ctx->pcm, -1);
 
     free(buffer);
-    if (handle) {
-        if (handle->out_fp) {
+    if (handle)
+    {
+        if (handle->out_fp)
+        {
             fclose(handle->out_fp);
-            if (handle->out_buf) {
+            if (handle->out_buf)
+            {
                 free(handle->out_buf);
                 handle->out_buf = NULL;
             }

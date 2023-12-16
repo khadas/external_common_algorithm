@@ -51,7 +51,8 @@
 #  define OPTPARSE_API
 #endif
 
-struct optparse {
+struct optparse
+{
     char **argv;
     int permute;
     int optind;
@@ -61,13 +62,15 @@ struct optparse {
     int subopt;
 };
 
-enum optparse_argtype {
+enum optparse_argtype
+{
     OPTPARSE_NONE,
     OPTPARSE_REQUIRED,
     OPTPARSE_OPTIONAL
 };
 
-struct optparse_long {
+struct optparse_long
+{
     const char *longname;
     int shortname;
     enum optparse_argtype argtype;
@@ -201,19 +204,27 @@ optparse(struct optparse *options, const char *optstring)
     options->errmsg[0] = '\0';
     options->optopt = 0;
     options->optarg = 0;
-    if (option == 0) {
+    if (option == 0)
+    {
         return -1;
-    } else if (optparse_is_dashdash(option)) {
+    }
+    else if (optparse_is_dashdash(option))
+    {
         options->optind++; /* consume "--" */
         return -1;
-    } else if (!optparse_is_shortopt(option)) {
-        if (options->permute) {
+    }
+    else if (!optparse_is_shortopt(option))
+    {
+        if (options->permute)
+        {
             int index = options->optind++;
             int r = optparse(options, optstring);
             optparse_permute(options, index);
             options->optind--;
             return r;
-        } else {
+        }
+        else
+        {
             return -1;
         }
     }
@@ -221,17 +232,22 @@ optparse(struct optparse *options, const char *optstring)
     options->optopt = option[0];
     type = optparse_argtype(optstring, option[0]);
     next = options->argv[options->optind + 1];
-    switch (type) {
-    case -1: {
+    switch (type)
+    {
+    case -1:
+    {
         char str[2] = {0, 0};
         str[0] = option[0];
         options->optind++;
         return optparse_error(options, OPTPARSE_MSG_INVALID, str);
     }
     case OPTPARSE_NONE:
-        if (option[1]) {
+        if (option[1])
+        {
             options->subopt++;
-        } else {
+        }
+        else
+        {
             options->subopt = 0;
             options->optind++;
         }
@@ -239,12 +255,17 @@ optparse(struct optparse *options, const char *optstring)
     case OPTPARSE_REQUIRED:
         options->subopt = 0;
         options->optind++;
-        if (option[1]) {
+        if (option[1])
+        {
             options->optarg = option + 1;
-        } else if (next != 0) {
+        }
+        else if (next != 0)
+        {
             options->optarg = next;
             options->optind++;
-        } else {
+        }
+        else
+        {
             char str[2] = {0, 0};
             str[0] = option[0];
             options->optarg = 0;
@@ -285,8 +306,10 @@ optparse_from_long(const struct optparse_long *longopts, char *optstring)
 {
     char *p = optstring;
     int i;
-    for (i = 0; !optparse_longopts_end(longopts, i); i++) {
-        if (longopts[i].shortname) {
+    for (i = 0; !optparse_longopts_end(longopts, i); i++)
+    {
+        if (longopts[i].shortname)
+        {
             int a;
             *p++ = longopts[i].shortname;
             for (a = 0; a < (int)longopts[i].argtype; a++)
@@ -329,9 +352,11 @@ optparse_long_fallback(struct optparse *options,
     char optstring[96 * 3 + 1]; /* 96 ASCII printable characters */
     optparse_from_long(longopts, optstring);
     result = optparse(options, optstring);
-    if (longindex != 0) {
+    if (longindex != 0)
+    {
         *longindex = -1;
-        if (result != -1) {
+        if (result != -1)
+        {
             int i;
             for (i = 0; !optparse_longopts_end(longopts, i); i++)
                 if (longopts[i].shortname == options->optopt)
@@ -349,21 +374,31 @@ optparse_long(struct optparse *options,
 {
     int i;
     char *option = options->argv[options->optind];
-    if (option == 0) {
+    if (option == 0)
+    {
         return -1;
-    } else if (optparse_is_dashdash(option)) {
+    }
+    else if (optparse_is_dashdash(option))
+    {
         options->optind++; /* consume "--" */
         return -1;
-    } else if (optparse_is_shortopt(option)) {
+    }
+    else if (optparse_is_shortopt(option))
+    {
         return optparse_long_fallback(options, longopts, longindex);
-    } else if (!optparse_is_longopt(option)) {
-        if (options->permute) {
+    }
+    else if (!optparse_is_longopt(option))
+    {
+        if (options->permute)
+        {
             int index = options->optind++;
             int r = optparse_long(options, longopts, longindex);
             optparse_permute(options, index);
             options->optind--;
             return r;
-        } else {
+        }
+        else
+        {
             return -1;
         }
     }
@@ -374,19 +409,26 @@ optparse_long(struct optparse *options,
     options->optarg = 0;
     option += 2; /* skip "--" */
     options->optind++;
-    for (i = 0; !optparse_longopts_end(longopts, i); i++) {
+    for (i = 0; !optparse_longopts_end(longopts, i); i++)
+    {
         const char *name = longopts[i].longname;
-        if (optparse_longopts_match(name, option)) {
+        if (optparse_longopts_match(name, option))
+        {
             char *arg;
             if (longindex)
                 *longindex = i;
             options->optopt = longopts[i].shortname;
             arg = optparse_longopts_arg(option);
-            if (longopts[i].argtype == OPTPARSE_NONE && arg != 0) {
+            if (longopts[i].argtype == OPTPARSE_NONE && arg != 0)
+            {
                 return optparse_error(options, OPTPARSE_MSG_TOOMANY, name);
-            } if (arg != 0) {
+            }
+            if (arg != 0)
+            {
                 options->optarg = arg;
-            } else if (longopts[i].argtype == OPTPARSE_REQUIRED) {
+            }
+            else if (longopts[i].argtype == OPTPARSE_REQUIRED)
+            {
                 options->optarg = options->argv[options->optind];
                 if (options->optarg == 0)
                     return optparse_error(options, OPTPARSE_MSG_MISSING, name);
