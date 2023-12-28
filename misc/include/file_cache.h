@@ -4,12 +4,7 @@
 #define __FILE_CACHE_H__
 
 #include <stdint.h>
-
-typedef struct _FILE_CACHE_ARG {
-	const char *sdcard_path;
-	int write_cache;
-	int total_cache;
-} FILE_CACHE_ARG;
+#include "file_common.h"
 
 int file_cache_init(FILE_CACHE_ARG *cache_arg);
 int file_cache_deinit();
