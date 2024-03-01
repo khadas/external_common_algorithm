@@ -7,7 +7,7 @@
       "psiMin": "float:0.05",
       "psiMax": "float:0.516",
       "fGmin": "float:0.05",
-      "Sup_Freq1": 2500,
+      "Sup_Freq1": -3588,
       "Sup_Freq2": -3588,
       "Sup_Energy1" : "float:100000.0",
       "Sup_Energy2" : "float:100000.0",
@@ -27,7 +27,7 @@
       "PrioriRatioLow" : "float:0.95",
       "SplitBand" : 20,
       "PrioriSmooth": "float:0.7",
-      "TranMode": 1
+      "TranMode": 0
     },
     "howl": {
       "status" : "enable",
