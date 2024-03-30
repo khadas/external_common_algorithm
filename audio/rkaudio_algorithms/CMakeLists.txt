@@ -29,6 +29,10 @@ if (USE_UCLIBC)
 				${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_common.a
 			DESTINATION "lib"
 		)
+		install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
+			DESTINATION "vqefiles"
+			FILES_MATCHING PATTERN "*.rknn"
+		)
 	endif()
 
 	if(RKAPPLUS_ENABLE)
