@@ -21,47 +21,54 @@ extern "C" {
 	/**********************EQ Parameter**********************/
 	static short EqPara_16k[5][13] =
 	{
-		//filter_bank 1
-		{-1 ,-1 ,-1 ,-1 ,-2 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-2 ,-3 },
-		//filter_bank 2
-		{-1 ,-1 ,-1 ,-1 ,-2 ,-2 ,-3 ,-5 ,-3 ,-2 ,-1 ,-1 ,-2 },
-		//filter_bank 3
-		{-2 ,-5 ,-9 ,-4 ,-2 ,-2 ,-1 ,-5 ,-5 ,-11 ,-20 ,-11 ,-5 },
-		//filter_bank 4
-		{-5 ,-1 ,-7 ,-7 ,-19 ,-40 ,-20 ,-9 ,-10 ,-1 ,-20 ,-24 ,-60 },
-		//filter_bank 5
-		{-128 ,-76 ,-40 ,-44 ,-1 ,-82 ,-111 ,-383 ,-1161 ,-1040 ,-989 ,-3811 ,32764 },
+		// filter_bank_0
+		{-1 ,-2 ,-1 ,0 ,0 ,-3 ,-4 ,-1 ,0 ,-3 ,-6 ,-4 ,-1 },
+		// filter_bank_1
+		{-1 ,-4 ,-5 ,-6 ,-10 ,-9 ,-3 ,-3 ,-11 ,-12 ,2 ,12 ,0 },
+		// filter_bank_2
+		{-16 ,-11 ,2 ,-1 ,-11 ,-8 ,-4 ,-10 ,-6 ,13 ,7 ,-40 ,-62 },
+		// filter_bank_3
+		{-17 ,23 ,-22 ,-83 ,-57 ,6 ,-14 ,-92 ,-126 ,-141 ,-200 ,-197 ,-54 },
+		// filter_bank_4
+		{-8 ,-249 ,-390 ,10 ,428 ,-142 ,-1341 ,-1365 ,208 ,664 ,-2836 ,-8715 ,32764 },
 	};
 
 	/**********************AES Parameter**********************/
 	static float LimitRatio[2][3] = {
 		/* low freq   median freq    high freq*/
-		{   2.0f,        1.5f,          1.0f  },  //limit
-		{   1.5f,        1.2f,          1.0f  },  //ratio
+		{   1.2f,        1.2f,          1.2f  },  //limit
+		{   1.2f,        1.2f,          1.2f  },  //ratio
 	};
 
 	/**********************THD Parameter**********************/
 	static short ThdSplitFreq[4][2] = {
-		{ 0,0},//For low frequency
-		{ 1500,2000},
-		{ 2000,6000},
-		{ 6000,8000},
+		{ 500,1000},//For low frequency
+		{ 1000,2400},
+		{ 2400,4000},
+		{ 4000,8000},
 	};
 
 	static float ThdSupDegree[4][10] =
 	{
 		/* 2th		3th		4th		5th		6th		7th		8th		9th		10th	11th order  */
-		{ 0.01f, 0.01f,	0.005f,	0.005f,		0,		0,		0,		0,		0,		0},
-		{ 0.0005f, 0.0005f,   0.0005f,      0,		0,		0,		0,		0,		0,		0},
-		{ 0.001f, 0.001f, 0.001f, 0.001f, 0.001f, 0.001f,	0,0,		0,		0,},
-		{ 0.001f, 0.001f, 0.001f, 0.001f, 0.001f, 0.001f, 0,	0,		0,		0},
+		/*
+		{0.005f, 0.005f,	0,		0,		0,		0,		0,		0,		0,		0},
+		{ 0.005f, 0.005f,   0.005f,      0,		0,		0,		0,		0,		0,		0},
+		{ 0.005f, 0.005f, 0.005f,   0.005f, 0,	0,	0,0,		0,		0,},
+		{ 0.003f, 0.003f, 0.004f,	0.005f, 0.003f, 0.003f, 0.003f,	0,		0,		0},
+		*/
+		/* 2th		3th		4th		5th		6th		7th		8th		9th		10th	11th order  */
+		{ 0.005f, 0.005f,	0,		0,		0,		0,		0,		0,		0,		0},
+		{ 0.005f, 0.005f,   0.005f,      0,		0,		0,		0,		0,		0,		0},
+		{ 0.005f, 0.005f, 0.005f,   0.005f, 0,	0,	0,0,		0,		0,},
+		{ 0.003f, 0.003f, 0.002f,	0.002f, 0.002f, 0.002f, 0.002f,	0,		0,		0},
 	};
 	static short HardSplitFreq[5][2] = {
-		{ 100,500},	//1 to 4 is select hard suppress freq bin
+		{ 500,2500},	//1 to 4 is select hard suppress freq bin
 		{ 0,0},
 		{ 0,0},
 		{ 0,0},
-		{ 500,3000},//freq use to calculate mean_G
+		{ 2000,4000},//freq use to calculate mean_G
 	};
 	static float HardThreshold[4] = { 0.35,0.15, 0.25, 0.15 };
 
@@ -106,6 +113,7 @@ extern "C" {
 	{
 		EN_RX_Anr = 1 << 0,
 		EN_RX_HOWLING = 1 << 1,
+		EN_RX_AGC = 1 << 2,
 	} RkaudioRxEnable;
 	/*****************************************/
 
@@ -149,6 +157,7 @@ extern "C" {
 		int model_rx_en;
 		void* anr_para;
 		void* howl_para;
+		void* agc_para;
 	}RkaudioRxParam;
 	/****************************************/
 	/*The param struct of sub-mudule of AEC,BF and RX*/
@@ -287,7 +296,8 @@ extern "C" {
 
 	/* Set the Sub-Para which used to initialize the DELAY*/
 	inline static void* rkaudio_delay_param_init() {
-		RKAudioDelayParam* param = (RKAudioDelayParam*)malloc(sizeof(RKAudioDelayParam));
+		/*RKAudioDelayParam* param = (RKAudioDelayParam*)malloc(sizeof(RKAudioDelayParam));*/
+		RKAudioDelayParam* param = (RKAudioDelayParam*)calloc(1, sizeof(RKAudioDelayParam));
 		param->MaxFrame = 32;		/* delay×î³¤¹À¼ÆÖ¡Êý */
 		param->LeastDelay = 0;		/* delay×î¶Ì¹À¼ÆÖ¡Êý */
 		param->JumpFrame = 12;		/* Ìø¹ýÖ¡Êý */
@@ -301,20 +311,21 @@ extern "C" {
 	}
 	/* Set the Sub-Para which used to initialize the ANR*/
 	inline static void* rkaudio_anr_param_init_tx() {
-		SKVANRParam* param = (SKVANRParam*)malloc(sizeof(SKVANRParam));
+		/*SKVANRParam* param = (SKVANRParam*)malloc(sizeof(SKVANRParam));*/
+		SKVANRParam* param = (SKVANRParam*)calloc(1, sizeof(SKVANRParam));
 		/* anr parameters */
 		param->noiseFactor = 0.88f;//-3588.0f to compatible old json
 		//param->noiseFactor = -3588.0f;
-		param->swU = 1;
+		param->swU = 10;
 		param->PsiMin = 0.02;
 		param->PsiMax = 0.516;
-		param->fGmin = 0.01;
+		param->fGmin = 0.05;
 		param->Sup_Freq1 = -3588;
 		param->Sup_Freq2 = -3588;
 		param->Sup_Energy1 = 10000;
 		param->Sup_Energy2 = 10000;
 
-		param->InterV = 1;				//ANR_NOISE_EST_V
+		param->InterV = 8;				//ANR_NOISE_EST_V
 		param->BiasMin = 1.67f;			//ANR_NOISE_EST_BMIN
 		param->UpdateFrm = 15;			//UPDATE_FRAME
 		param->NPreGammaThr = 4.6f;		//ANR_NOISE_EST_GAMMA0
@@ -337,27 +348,29 @@ extern "C" {
 	}
 	/* Set the Sub-Para which used to initialize the Dereverb*/
 	inline static void* rkaudio_dereverb_param_init() {
-		RKAudioDereverbParam* param = (RKAudioDereverbParam*)malloc(sizeof(RKAudioDereverbParam));
+		/*RKAudioDereverbParam* param = (RKAudioDereverbParam*)malloc(sizeof(RKAudioDereverbParam));*/
+		RKAudioDereverbParam* param = (RKAudioDereverbParam*)calloc(1, sizeof(RKAudioDereverbParam));
 		param->rlsLg = 4;			/* RLSÂË²¨Æ÷½×Êý */
-		param->curveLg = 20;		/* ·Ö²¼ÇúÏß½×Êý */
+		param->curveLg = 30;		/* ·Ö²¼ÇúÏß½×Êý */
 		param->delay = 2;			/* RLSÂË²¨Æ÷ÑÓÊ± */
 		param->forgetting = 0.98;	/* RLSÂË²¨Æ÷ÒÅÍüÒò×Ó */
-		param->T60 = 0.4;//1.5;		/* »ìÏìÊ±¼ä¹À¼ÆÖµ£¨µ¥Î»£ºs£©£¬Ô½´ó£¬È¥»ìÏìÄÜÁ¦Ô½Ç¿£¬µ«ÊÇÔ½ÈÝÒ×¹ýÏû³ý */
+		param->T60 = 0.3;//1.5;		/* »ìÏìÊ±¼ä¹À¼ÆÖµ£¨µ¥Î»£ºs£©£¬Ô½´ó£¬È¥»ìÏìÄÜÁ¦Ô½Ç¿£¬µ«ÊÇÔ½ÈÝÒ×¹ýÏû³ý */
 		param->coCoeff = 1;			/* »¥Ïà¸ÉÐÔµ÷ÕûÏµÊý£¬·ÀÖ¹¹ýÏû³ý£¬Ô½´óÄÜÁ¦Ô½Ç¿£¬½¨ÒéÈ¡Öµ£º0.5µ½2Ö®¼ä */
 		return (void*)param;
 	}
 	/* Set the Sub-Para which used to initialize the AES*/
 	inline static void* rkaudio_aes_param_init() {
-		RKAudioAESParameter* param = (RKAudioAESParameter*)malloc(sizeof(RKAudioAESParameter));
+		/*RKAudioAESParameter* param = (RKAudioAESParameter*)malloc(sizeof(RKAudioAESParameter));*/
+		RKAudioAESParameter* param = (RKAudioAESParameter*)calloc(1, sizeof(RKAudioAESParameter));
 		//param->Beta_Up = 0.002f; /* ÉÏÉýËÙ¶È -3588.0f to compatible old json*/
 		param->Beta_Up = 0.002f;
 		param->Beta_Down = 0.001f; /* ÏÂ½µËÙ¶È */
-		param->Beta_Up_Low = 0.005f; /* µÍÆµÉÏÉýËÙ¶È */
+		param->Beta_Up_Low = 0.002f; /* µÍÆµÉÏÉýËÙ¶È */
 		param->Beta_Down_Low = 0.001f; /* µÍÆµÏÂ½µËÙ¶È */
 		param->low_freq = 500;
 		param->high_freq = 3750;
-		param->THD_Flag = 0;	/* 1 open THD, 0 close THD */
-		param->HARD_Flag = 0;	/* 1 open Hard Suppress, 0 close Hard Suppress */
+		param->THD_Flag = 1;	/* 1 open THD, 0 close THD */
+		param->HARD_Flag = 1;	/* 1 open Hard Suppress, 0 close Hard Suppress */
 		int i, j;
 		for (i = 0; i < 2; i++)
 			for (j = 0; j < 3; j++)
@@ -379,7 +392,8 @@ extern "C" {
 	/* Set the Sub-Para which used to initialize the DTD*/
 	inline static void* rkaudio_dtd_param_init()
 	{
-		RKDTDParam* param = (RKDTDParam*)malloc(sizeof(RKDTDParam));
+		/*RKDTDParam* param = (RKDTDParam*)malloc(sizeof(RKDTDParam));*/
+		RKDTDParam* param = (RKDTDParam*)calloc(1, sizeof(RKDTDParam));
 		/* dtd paremeters*/
 		param->ksiThd_high = 0.60f;										            /* µ¥Ë«½²ÅÐ¾öãÐÖµ */
 		param->ksiThd_low = 0.50f;
@@ -388,18 +402,18 @@ extern "C" {
 	/* Set the Sub-Para which used to initialize the AGC*/
 	inline static void* rkaudio_agc_param_init()
 	{
-		RKAGCParam* param = (RKAGCParam*)malloc(sizeof(RKAGCParam));
+		/*RKAGCParam* param = (RKAGCParam*)malloc(sizeof(RKAGCParam));*/
+		RKAGCParam* param = (RKAGCParam*)calloc(1, sizeof(RKAGCParam));
 
-		/* ÐÂ°æAGC²ÎÊý */
-		param->attack_time = 200.0;		/* ´¥·¢Ê±¼ä£¬¼´AGCÔöÒæÉÏÉýËùÐèÒªµÄÊ±¼ä */
-		param->release_time = 200.0;	/* Ê©·ÅÊ±¼ä£¬¼´AGCÔöÒæÏÂ½µËùÐèÒªµÄÊ±¼ä */
-		//param->max_gain = 35.0;		/* ×î´óÔöÒæ£¬Í¬Ê±Ò²ÊÇÏßÐÔ¶ÎÔöÒæ£¬µ¥Î»£ºdB */
-		param->max_gain = 25;			/* ×î´óÔöÒæ£¬Í¬Ê±Ò²ÊÇÏßÐÔ¶ÎÔöÒæ£¬µ¥Î»£ºdB */
-		param->max_peak = -1.0;			/* ¾­AGC´¦Àíºó£¬Êä³öÓïÒôµÄ×î´óÄÜÁ¿£¬·¶Î§£ºµ¥Î»£ºdB */
-		param->fRk0 = 2;				/* À©ÕÅ¶ÎÐ±ÂÊ */
-		param->fRth2 = -30;				/* Ñ¹Ëõ¶ÎÆðÊ¼ÄÜÁ¿dBãÐÖµ£¬Í¬Ê±Ò²ÊÇÏßÐÔ¶Î½áÊøãÐÖµ£¬ÔöÒæÖð½¥½µµÍ£¬×¢Òâ fRth2 + max_gain < max_peak */
-		param->fRth1 = -45;				/* À©ÕÅ¶Î½áÊøÄÜÁ¿dBãÐÖµ£¬Í¬Ê±Ò²ÊÇÏßÐÔ¶Î¿ªÊ¼ãÐÖµ£¬ÄÜÁ¿¸ßÓÚ¸ÄÇøÓòÒÔmax_gainÔöÒæ */
-		param->fRth0 = -55;				/* ÔëÉùÃÅãÐÖµ */
+		param->attack_time = 100.0;		/* 触发时间，即AGC增益上升所需要的时间 */
+		param->release_time = 200.0;	/* 施放时间，即AGC增益下降所需要的时间 */
+		//param->max_gain = 35.0;		/* 最大增益，同时也是线性段增益，单位：dB */
+		param->max_gain = 30;			/* 最大增益，同时也是线性段增益，单位：dB */
+		param->max_peak = -3.0;			/* 经AGC处理后，输出语音的最大能量，范围：单位：dB */
+		param->fRk0 = 2;				/* 扩张段斜率 */
+		param->fRth2 = -45;				/* 压缩段起始能量dB阈值，同时也是线性段结束阈值，增益逐渐降低，注意 fRth2 + max_gain < max_peak */
+		param->fRth1 = -60;				/* 扩张段结束能量dB阈值，同时也是线性段开始阈值，能量高于改区域以max_gain增益 */
+		param->fRth0 = -65;				/* 噪声门阈值 */
 
 		/* ÎÞÐ§²ÎÊý */
 		param->fs = 16000;                       /* Êý¾Ý²ÉÑùÂÊ */
@@ -408,7 +422,7 @@ extern "C" {
 		param->fRk1 = 0.8;                      /* À©ÕÅ¶ÎÐ±ÂÊ */
 		param->fRk2 = 0.4;                      /* À©ÕÅ¶ÎÐ±ÂÊ */
 		param->fLineGainDb = -25.0f;               /* µÍÓÚ¸ÃÖµ£¬ÆðÊ¼µÄattenuate_time(ms)ÄÚ²»×öÔöÒæ */
-		param->swSmL0 = 40;                    /* À©ÕÅ¶ÎÊ±ÓòÆ½»¬µãÊý */
+		param->swSmL0 = 1;                    /* use for AINR pre_gain */
 		param->swSmL1 = 80;                    /* ÏßÐÔ¶ÎÊ±ÓòÆ½»¬µãÊý */
 		param->swSmL2 = 80;                    /* Ñ¹Ëõ¶ÎÊ±ÓòÆ½»¬µãÊý */
 
@@ -417,7 +431,8 @@ extern "C" {
 	/* Set the Sub-Para which used to initialize the CNG*/
 	inline static void* rkaudio_cng_param_init()
 	{
-		RKCNGParam* param = (RKCNGParam*)malloc(sizeof(RKCNGParam));
+		/*RKCNGParam* param = (RKCNGParam*)malloc(sizeof(RKCNGParam));*/
+		RKCNGParam* param = (RKCNGParam*)calloc(1, sizeof(RKCNGParam));
 		/* cng paremeters */
 		param->fSmoothAlpha = 0.99f;										            /* INT16 Q15 Ê©¼ÓÊæÊÊÔëÉùÆ½»¬¶È */
 		param->fSpeechGain = 0;										                /* INT16 Q15 Ê©¼ÓÊæÊÊÔëÉùÓïÒôÎÆÀíÄ£Äâ³Ì¶È */
@@ -427,7 +442,8 @@ extern "C" {
 	}
 	/* Set the Sub-Para which used to initialize the EQ*/
 	inline static void* rkaudio_eq_param_init() {
-		RKaudioEqParam* param = (RKaudioEqParam*)malloc(sizeof(RKaudioEqParam));
+		/*RKaudioEqParam* param = (RKaudioEqParam*)malloc(sizeof(RKaudioEqParam));*/
+		RKaudioEqParam* param = (RKaudioEqParam*)calloc(1, sizeof(RKaudioEqParam));
 		param->shwParaLen = 65;
 		int i, j;
 		for (i = 0; i < 5; i++) {
@@ -439,12 +455,14 @@ extern "C" {
 	}
 	/* Set the Sub-Para which used to initialize the HOWL*/
 	inline static void* rkaudio_howl_param_init_tx() {
-		RKHOWLParam* param = (RKHOWLParam*)malloc(sizeof(RKHOWLParam));
-		param->howlMode = 4;
+		/*RKHOWLParam* param = (RKHOWLParam*)malloc(sizeof(RKHOWLParam));*/
+		RKHOWLParam* param = (RKHOWLParam*)calloc(1, sizeof(RKHOWLParam));
+		param->howlMode = 5;
 		return (void*)param;
 	}
 	inline static void* rkaudio_doa_param_init() {
-		RKDOAParam* param = (RKDOAParam*)malloc(sizeof(RKDOAParam));
+		/*RKDOAParam* param = (RKDOAParam*)malloc(sizeof(RKDOAParam));*/
+		RKDOAParam* param = (RKDOAParam*)calloc(1, sizeof(RKDOAParam));
 		param->rad = 0.04f;
 		param->start_freq = 1000;
 		param->end_freq = 4000;
@@ -454,7 +472,8 @@ extern "C" {
 	}
 	/************* RX *************/
 	inline static void* rkaudio_anr_param_init_rx() {
-		SKVANRParam* param = (SKVANRParam*)malloc(sizeof(SKVANRParam));
+		/*SKVANRParam* param = (SKVANRParam*)malloc(sizeof(SKVANRParam));*/
+		SKVANRParam* param = (SKVANRParam*)calloc(1, sizeof(SKVANRParam));
 		/* anr parameters */
 		param->noiseFactor = 0.88f;
 		param->swU = 10;
@@ -490,15 +509,44 @@ extern "C" {
 		return (void*)param;
 	}
 	inline static void* rkaudio_howl_param_init_rx() {
-		RKHOWLParam* param = (RKHOWLParam*)malloc(sizeof(RKHOWLParam));
+		/*RKHOWLParam* param = (RKHOWLParam*)malloc(sizeof(RKHOWLParam));*/
+		RKHOWLParam* param = (RKHOWLParam*)calloc(1, sizeof(RKHOWLParam));
 		param->howlMode = 4;
 		return (void*)param;
 	}
+	inline static void* rkaudio_agc_param_init_rx()
+	{
+		RKAGCParam* param = (RKAGCParam*)malloc(sizeof(RKAGCParam));
 
+		/* ÐÂ°æAGC²ÎÊý */
+		param->attack_time = 200.0;		/* ´¥·¢Ê±¼ä£¬¼´AGCÔöÒæÉÏÉýËùÐèÒªµÄÊ±¼ä */
+		param->release_time = 200.0;	/* Ê©·ÅÊ±¼ä£¬¼´AGCÔöÒæÏÂ½µËùÐèÒªµÄÊ±¼ä */
+		//param->max_gain = 35.0;		/* ×î´óÔöÒæ£¬Í¬Ê±Ò²ÊÇÏßÐÔ¶ÎÔöÒæ£¬µ¥Î»£ºdB */
+		param->max_gain = 5.0;			/* ×î´óÔöÒæ£¬Í¬Ê±Ò²ÊÇÏßÐÔ¶ÎÔöÒæ£¬µ¥Î»£ºdB */
+		param->max_peak = -1;			/* ¾­AGC´¦Àíºó£¬Êä³öÓïÒôµÄ×î´óÄÜÁ¿£¬·¶Î§£ºµ¥Î»£ºdB */
+		param->fRk0 = 2;				/* À©ÕÅ¶ÎÐ±ÂÊ */
+		param->fRth2 = -25;				/* Ñ¹Ëõ¶ÎÆðÊ¼ÄÜÁ¿dBãÐÖµ£¬Í¬Ê±Ò²ÊÇÏßÐÔ¶Î½áÊøãÐÖµ£¬ÔöÒæÖð½¥½µµÍ£¬×¢Òâ fRth2 + max_gain < max_peak */
+		param->fRth1 = -35;				/* À©ÕÅ¶Î½áÊøÄÜÁ¿dBãÐÖµ£¬Í¬Ê±Ò²ÊÇÏßÐÔ¶Î¿ªÊ¼ãÐÖµ£¬ÄÜÁ¿¸ßÓÚ¸ÄÇøÓòÒÔmax_gainÔöÒæ */
+		param->fRth0 = -45;				/* ÔëÉùÃÅãÐÖµ */
+
+		/* ÎÞÐ§²ÎÊý */
+		param->fs = 16000;                       /* Êý¾Ý²ÉÑùÂÊ */
+		param->frmlen = 256;                   /* ´¦ÀíÖ¡³¤ */
+		param->attenuate_time = 1000; /* ÔëÉùË¥¼õÊ±¼ä£¬¼´ÔëÉù¶ÎÔöÒæË¥¼õµ½1ËùÐèµÄÊ±¼ä */
+		param->fRk1 = 0.8;                      /* À©ÕÅ¶ÎÐ±ÂÊ */
+		param->fRk2 = 0.4;                      /* À©ÕÅ¶ÎÐ±ÂÊ */
+		param->fLineGainDb = -25.0f;               /* µÍÓÚ¸ÃÖµ£¬ÆðÊ¼µÄattenuate_time(ms)ÄÚ²»×öÔöÒæ */
+		param->swSmL0 = 40;                    /* À©ÕÅ¶ÎÊ±ÓòÆ½»¬µãÊý */
+		param->swSmL1 = 80;                    /* ÏßÐÔ¶ÎÊ±ÓòÆ½»¬µãÊý */
+		param->swSmL2 = 80;                    /* Ñ¹Ëõ¶ÎÊ±ÓòÆ½»¬µãÊý */
+
+		return (void*)param;
+	}
 	/* Set the Sub-Para which used to initialize the AEC*/
 	inline static void* rkaudio_aec_param_init()
 	{
-		SKVAECParameter* param = (SKVAECParameter*)malloc(sizeof(SKVAECParameter));
+		/*SKVAECParameter* param = (SKVAECParameter*)malloc(sizeof(SKVAECParameter));*/
+		SKVAECParameter* param = (SKVAECParameter*)calloc(1, sizeof(SKVAECParameter));
 		param->pos = REF_POSITION;
 		param->drop_ref_channel = NUM_DROP_CHANNEL;
 		param->model_aec_en = 0;	//param->model_aec_en = EN_DELAY;
@@ -515,17 +563,18 @@ extern "C" {
 	/* Set the Sub-Para which used to initialize the BF*/
 	inline static void* rkaudio_preprocess_param_init()
 	{
-		SKVPreprocessParam* param = (SKVPreprocessParam*)malloc(sizeof(SKVPreprocessParam));
+		/*SKVPreprocessParam* param = (SKVPreprocessParam*)malloc(sizeof(SKVPreprocessParam));*/
+		SKVPreprocessParam* param = (SKVPreprocessParam*)calloc(1, sizeof(SKVPreprocessParam));
 		//param->model_bf_en = EN_Fastaec;
-		param->model_bf_en = EN_Fastaec | EN_AES | EN_Anr | EN_Dereverberation | EN_Agc | EN_HOWLING;
-		//param->model_bf_en = EN_Fastaec | EN_AES | EN_Anr | EN_Dereverberation | EN_Agc;
+		//param->model_bf_en = EN_AINR | EN_Anr | EN_Agc; // | EN_Wakeup | EN_WIND | EN_Dereverberation | EN_HOWLING;
+		//param->model_bf_en = EN_Fastaec | EN_AES | EN_Dereverberation | EN_Agc;
 		//param->model_bf_en = EN_Fix | EN_Agc | EN_AINR | EN_Dereverberation;
-		//param->model_bf_en = EN_Fastaec | EN_AES | EN_Anr | EN_Dereverberation;
+		param->model_bf_en = EN_DOA | EN_Fix | EN_AINR | EN_Anr ;
 		//param->model_bf_en = EN_Wakeup;
 		//param->model_bf_en = EN_Fastaec | EN_Fix | EN_Agc | EN_Anr;
 		//param->model_bf_en = EN_Fastaec | EN_AES | EN_Agc | EN_Fix | EN_Anr | EN_HOWLING;
 		//param->model_bf_en = EN_Fastaec | EN_AES | EN_Anr | EN_Agc;
-		param->Targ = 0;
+		param->Targ = 2;
 		param->ref_pos = REF_POSITION;
 		param->num_ref_channel = NUM_REF_CHANNEL;
 		param->drop_ref_channel = NUM_DROP_CHANNEL;
@@ -543,10 +592,12 @@ extern "C" {
 	/* Set the Sub-Para which used to initialize the RX*/
 	inline static void* rkaudio_rx_param_init()
 	{
-		RkaudioRxParam* param = (RkaudioRxParam*)malloc(sizeof(RkaudioRxParam));
-		param->model_rx_en = EN_RX_Anr | EN_RX_HOWLING;
+		//RkaudioRxParam* param = (RkaudioRxParam*)malloc(sizeof(RkaudioRxParam));
+		RkaudioRxParam* param = (RkaudioRxParam*)calloc(1, sizeof(RkaudioRxParam));
+		param->model_rx_en = EN_RX_AGC | EN_RX_Anr | EN_RX_HOWLING;
 		param->anr_para = rkaudio_anr_param_init_rx();
 		param->howl_para = rkaudio_howl_param_init_rx();
+		param->agc_para = rkaudio_agc_param_init_rx();
 		return (void*)param;
 	}
 	typedef struct RKAUDIOParam_
