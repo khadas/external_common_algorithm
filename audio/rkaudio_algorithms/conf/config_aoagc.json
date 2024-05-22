@@ -6,7 +6,7 @@
             "release_time" : "float:200.0",
             "attenuate_time" : "float:1000",
             "max_gain"  : "float:20.0",
-            "max_peak" : "float:-1.0",
+            "max_peak" : "float:-3.0",
             "fRth0": "float:-45",
             "fRth1" : "float:-40",
             "fRth2" : "float:-35",
