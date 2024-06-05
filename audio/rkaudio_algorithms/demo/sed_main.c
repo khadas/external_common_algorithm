@@ -1,7 +1,4 @@
-#include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #include "audio/wave_reader.h"
@@ -21,9 +18,7 @@ int main(int argc, char *argv[])
     clock_t clk_start, clk_end;
 
     /* For Debug  */
-    int aed_stat = 0;
     int out_size = 0, in_size = 0, res = 0;
-    int bcd_stat = 0, bcd_stat_old = 0;
 
     if (argc < 3)
     {
@@ -77,7 +72,7 @@ int main(int argc, char *argv[])
     // 每次读取数据大小
     int read_size = IN_SIZE * mNumChannel * mBitPerSample / 8;
     char *in = (char *)calloc(1, read_size * sizeof(char));
-    int out_res_num = 3;
+    int out_res_num = 3; // ch0:snr_db ch1:lsd_db ch2:bcd
     short *out = (short *)calloc(1, IN_SIZE * out_res_num * sizeof(short));
     // 输出音频格式设置
     format.num_channels = out_res_num;
@@ -108,8 +103,7 @@ loop_again:
     startTime = clock();
     int cnt = 0;
 
-    int gbs = 1, buz = 1, bcd = 1;
-    int  bcdcounts = 0;
+    int snr_cnt = 0, lsd_cnt = 0, bcd_cnt = 0;
     while (0 < (res = wave_reader_get_samples(wr, IN_SIZE, in)))
     {
         in_size = res * (mBitPerSample / 8) * mNumChannel;
@@ -122,9 +116,8 @@ loop_again:
 
         clk_end = clock();
 
-        //printf("lsd=%d,snr=%d,bcd=%d,buz_res=%d,gbs_res=%d\n", sed_res.lsd_res, sed_res.snr_res, sed_res.bcd_res, sed_res.buz_res, sed_res.gbs_res);
         if (sed_res.bcd_res == 1)
-            bcdcounts++;
+            bcd_cnt++;
 
         // 输出，测试用
         for (int i = 0; i < IN_SIZE; i++)
@@ -135,13 +128,12 @@ loop_again:
         }
         wave_writer_put_samples(ww, IN_SIZE, out);
         Total_sample += in_size / 2 / mNumChannel;
-        //if (cnt % 63 == 0)
-        //  printf("cnt = %d\n", cnt);
     }
     endTime = clock();
 
-    printf("\nFinished, speech_time = %f, cost_time = %f\n", \
-           Total_sample / mSampleRate, (double)(endTime - startTime) / CLOCKS_PER_SEC);
+    printf("\nFinished, speech_time = %f, cost_time = %f snr_cnt: %d lsd_cnt: %d bcd_cnt: %d\n", \
+           Total_sample / mSampleRate, (double)(endTime - startTime) / CLOCKS_PER_SEC,
+           snr_cnt, lsd_cnt, bcd_cnt);
 
     wave_writer_close(ww, &werror);
     wave_reader_close(wr);
