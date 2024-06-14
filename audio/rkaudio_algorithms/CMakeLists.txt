@@ -39,20 +39,20 @@ if (USE_UCLIBC)
 		if (RKAPPLUS_WAKEUP_ENABLE)
 			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_wakeup.so
 				DESTINATION "lib"
-				RENAME libaec_bf_process.so
+				RENAME librkaudio_vqe.so
 			)
 			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_wakeup.a
 				DESTINATION "lib"
-				RENAME libaec_bf_process.a
+				RENAME librkaudio_vqe.a
 			)
 	elseif (RKAPPLUS_AINR_ENABLE)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_ainr.so
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_vqe_ainr.so
 				DESTINATION "lib"
-				RENAME libaec_bf_process.so
+				RENAME librkaudio_vqe.so
 			)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_ainr.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_vqe_ainr.a
 				DESTINATION "lib"
-				RENAME libaec_bf_process.a
+				RENAME librkaudio_vqe.a
 			)
         elseif (RKAPPLUS_WAKEUP_MODE1_NN_ENABLE)
             install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../../../iva/iva/librockiva/rockiva-rv1106-Linux/lib/librknnmrt.so
@@ -81,8 +81,8 @@ if (USE_UCLIBC)
 				RENAME libaec_bf_process.a
             )
 		else()
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process.so
-				${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_vqe.so
+				${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_vqe.a
 				DESTINATION "lib"
 			)
 		endif()
@@ -119,15 +119,15 @@ if (USE_32BIT)
 	    if (RKAPPLUS_WAKEUP_ENABLE)
 			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/lib32/libaec_bf_process_wakeup.so
 				DESTINATION "lib"
-				RENAME libaec_bf_process.so
+				RENAME librkaudio_vqe.so
 			)
 			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/lib32/libaec_bf_process_wakeup.a
 				DESTINATION "lib"
-				RENAME libaec_bf_process.a
+				RENAME librkaudio_vqe.a
 			)
 		else()
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/lib32/libaec_bf_process.so
-				${CMAKE_CURRENT_SOURCE_DIR}/lib32/libaec_bf_process.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/lib32/librkaudio_vqe.so
+				${CMAKE_CURRENT_SOURCE_DIR}/lib32/librkaudio_vqe.a
 				DESTINATION "lib"
 			)
 		endif()
@@ -165,15 +165,15 @@ if (USE_64BIT)
 		if (RKAPPLUS_WAKEUP_ENABLE)
 			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/lib32/libaec_bf_process_wakeup.so
 				DESTINATION "lib"
-				RENAME libaec_bf_process.so
+				RENAME librkaudio_vqe.so
 			)
 			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/lib64/libaec_bf_process_wakeup.a
 				DESTINATION "lib"
-				RENAME libaec_bf_process.a
+				RENAME librkaudio_vqe.a
 			)
 		else()
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/lib64/libaec_bf_process.so
-				${CMAKE_CURRENT_SOURCE_DIR}/lib64/libaec_bf_process.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/lib64/librkaudio_vqe.so
+				${CMAKE_CURRENT_SOURCE_DIR}/lib64/librkaudio_vqe.a
 				DESTINATION "lib"
 			)
 		endif()
