@@ -16,6 +16,10 @@ if (RV1106_RV1103)
 	file(GLOB SRC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm-rockchip830-linux-uclibcgnueabihf/*.*)
 endif()
 
+if (RV1103B)
+	file(GLOB SRC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm-rockchip830-linux-uclibcgnueabihf-rv1103b/*.*)
+endif()
+
 if (RK3588)
 	file(GLOB SRC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/lib/aarch64-rockchip1031-linux-gnu/*.*)
 endif()
