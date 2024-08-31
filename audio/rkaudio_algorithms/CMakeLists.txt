@@ -23,10 +23,15 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
 # ----------------------------------------------------------------------------
 #  install libs
 # ----------------------------------------------------------------------------
+if (RV1103B)
+set(uclibc_src uclibc_rv1103b)
+else()
+set(uclibc_src uclibc)
+endif()
 if (USE_UCLIBC)
 	if(RKAPPLUS_AED_ENABLE OR RKAPPLUS_ENABLE)
-		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_common.so
-				${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_common.a
+		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_common.so
+				${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_common.a
 			DESTINATION "lib"
 		)
 		install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
@@ -37,20 +42,20 @@ if (USE_UCLIBC)
 
 	if(RKAPPLUS_ENABLE)
 		if (RKAPPLUS_WAKEUP_ENABLE)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_wakeup.so
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/libaec_bf_process_wakeup.so
 				DESTINATION "lib"
 				RENAME librkaudio_vqe.so
 			)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_wakeup.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/libaec_bf_process_wakeup.a
 				DESTINATION "lib"
 				RENAME librkaudio_vqe.a
 			)
 	elseif (RKAPPLUS_AINR_ENABLE)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_vqe_ainr.so
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_vqe_ainr.so
 				DESTINATION "lib"
 				RENAME librkaudio_vqe.so
 			)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_vqe_ainr.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_vqe_ainr.a
 				DESTINATION "lib"
 				RENAME librkaudio_vqe.a
 			)
@@ -59,11 +64,11 @@ if (USE_UCLIBC)
                 ${CMAKE_CURRENT_SOURCE_DIR}/../../../../iva/iva/librockiva/rockiva-rv1106-Linux/lib/librknnmrt.a
 				DESTINATION "lib"
             )
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_wakeup_mode1_nn.so
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/libaec_bf_process_wakeup_mode1_nn.so
 				DESTINATION "lib"
 				RENAME libaec_bf_process.so
 			)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_wakeup_mode1_nn.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/libaec_bf_process_wakeup_mode1_nn.a
 				DESTINATION "lib"
 				RENAME libaec_bf_process.a
             )
@@ -72,32 +77,32 @@ if (USE_UCLIBC)
                 ${CMAKE_CURRENT_SOURCE_DIR}/../../../../iva/iva/librockiva/rockiva-rv1106-Linux/lib/librknnmrt.a
 				DESTINATION "lib"
 			)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_wakeup_mode2_nn.so
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/libaec_bf_process_wakeup_mode2_nn.so
 				DESTINATION "lib"
 				RENAME libaec_bf_process.so
 			)
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/libaec_bf_process_wakeup_mode2_nn.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/libaec_bf_process_wakeup_mode2_nn.a
 				DESTINATION "lib"
 				RENAME libaec_bf_process.a
             )
 		else()
-			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_vqe.so
-				${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_vqe.a
+			install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_vqe.so
+				${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_vqe.a
 				DESTINATION "lib"
 			)
 		endif()
 	endif()
 
 	if (RKAPPLUS_AED_ENABLE)
-		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_detect.so
-				${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_detect.a
+		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_detect.so
+				${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_detect.a
 			DESTINATION "lib"
 		)
 	endif()
 
 	if (RKAPPLUS_EFFECT_EQDRC_ENABLE)
-		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_effect_eqdrc.so
-			      ${CMAKE_CURRENT_SOURCE_DIR}/uclibc/librkaudio_effect_eqdrc.a
+		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_effect_eqdrc.so
+			      ${CMAKE_CURRENT_SOURCE_DIR}/${uclibc_src}/librkaudio_effect_eqdrc.a
 			DESTINATION "lib"
 		)
 		install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
