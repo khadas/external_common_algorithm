@@ -38,6 +38,12 @@ if (USE_UCLIBC)
 			DESTINATION "vqefiles"
 			FILES_MATCHING PATTERN "*.rknn"
 		)
+		if (RV1103B)
+			install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf_rv1103b/
+				DESTINATION "vqefiles"
+				FILES_MATCHING PATTERN "*.*"
+			)
+		endif()
 	endif()
 
 	if(RKAPPLUS_ENABLE)
