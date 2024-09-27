@@ -24,6 +24,10 @@ if (RK3588)
 	file(GLOB SRC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/lib/aarch64-rockchip1031-linux-gnu/*.*)
 endif()
 
+if (RK3576)
+	file(GLOB SRC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/lib/aarch64-rockchip1031-linux-gnu-rk3576/*.*)
+endif()
+
 if (SRC_LIBS)
 	foreach(lib_var ${SRC_LIBS})
 		install(FILES ${lib_var} DESTINATION "lib")
